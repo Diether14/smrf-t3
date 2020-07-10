@@ -20,7 +20,8 @@ const create = async (data) => {
 
     let connect;
     connect = await oracledb.getConnection();
-    const T_MANPOWER = await connect.getDbObjectClass("XXDOM.T_MANPOWER");
+    const T_MANPOWER = await connect.getDbObjectClass(process.env.SCHEMA + '.T_MANPOWER');
+    // const T_MANPOWER = await connect.getDbObjectClass("T_MANPOWER");
 
     const binds = {
         r_id: {
@@ -85,7 +86,6 @@ const create = async (data) => {
     };
     
     console.log(binds);
-
     const result = await database.simpleExecute(sql, binds);
 
     return result;
@@ -123,10 +123,10 @@ module.exports.completed = completed;
 const getJob = async (id) => {
     const sql = `SELECT j.*,
                         (SELECT CONCAT(CONCAT(u.last_name, ', '), u.first_name) 
-                            FROM xxdom.tbl_user u
+                            FROM ${process.env.SCHEMA}.tbl_user u
                             WHERE u.id = DECODE(j.issued_to, null, r.rep_person_id, j.issued_to)) as NAME_ISSUED_TO
-                    FROM xxdom.tbl_job_order j
-                            INNER JOIN xxdom.tblrequests r ON j.request_id = r.req_id 
+                    FROM ${process.env.SCHEMA}.tbl_job_order j
+                            INNER JOIN ${process.env.SCHEMA}.tblrequests r ON j.request_id = r.req_id 
                     WHERE request_id = :id`;
     
     const sqlManpower = `SELECT m.id,
@@ -137,9 +137,9 @@ const getJob = async (id) => {
                                     WHEN m.id > 0 THEN 'false'
                                     ELSE 'true'
                                 END is_new
-                            FROM xxdom.tbl_manpower m
-                            LEFT JOIN xxdom.tbl_user u ON u.id = m.manpower_id
-                            WHERE m.job_order_id IN (SELECT jo.id FROM xxdom.tbl_job_order jo WHERE jo.request_id = :id)`;
+                            FROM ${process.env.SCHEMA}.tbl_manpower m
+                            LEFT JOIN ${process.env.SCHEMA}.tbl_user u ON u.id = m.manpower_id
+                            WHERE m.job_order_id IN (SELECT jo.id FROM ${process.env.SCHEMA}.tbl_job_order jo WHERE jo.request_id = :id)`;
 
     const binds = {
         id: {

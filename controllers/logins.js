@@ -1,5 +1,4 @@
 const logins = require('../db_apis/logins.js');
-const session = require('express-session');
 
 function loginForm(req) {
     const login = {
@@ -17,7 +16,7 @@ function loginForm(req) {
       login = await logins.validLogin(login);
 
       if (login.length > 0) {
-        session.username = login;
+        req.session.username = login;
         res.status(200).json(login);
       } else {
         res.status(200).json(null);
@@ -28,3 +27,15 @@ function loginForm(req) {
   }
    
   module.exports.post = post;
+
+  async function logout(req, res, next) {
+    try {
+      delete req.session.username;
+
+      res.status(200).end();
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  module.exports.logout = logout;

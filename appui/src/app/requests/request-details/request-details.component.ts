@@ -99,7 +99,6 @@ export class RequestDetailsComponent implements OnInit {
 
                     this.msg();
                   }
-                  console.log(res);
                },
                err => {
                   console.log(err);
@@ -114,7 +113,6 @@ export class RequestDetailsComponent implements OnInit {
     this.http.post(url, this.reqDetails)
         .subscribe(
           res => {
-            console.log(res);
             if (showMsg) {
               const msg = status ? 'updated' : 'deleted';
 
@@ -129,8 +127,6 @@ export class RequestDetailsComponent implements OnInit {
           }
         );
 
-    console.log(this.reqDetails);
-    // console.log(status);
   }
 
   previewImg(img) {
@@ -153,7 +149,6 @@ export class RequestDetailsComponent implements OnInit {
     const details = 'details';
 
     await this.userService.getAPI(url).subscribe((response: any) => {
-      // console.log('response from the server:::', response);
       const result = response;
 
       this.controlNumber = result[request][0].REQ_ID;
@@ -183,7 +178,6 @@ export class RequestDetailsComponent implements OnInit {
     // this.deptHead = result[request][0].DEPT_HEAD;
 
     // return result;
-    // console.log(result);
   }
 
   async getRequestList(dept) {
@@ -195,7 +189,6 @@ export class RequestDetailsComponent implements OnInit {
                  data => {
                    this.setRequestList = [];
                    this.setRequestList = data;
-                  //  console.log(this.setRequestList);
                  },
                  err => {
                      console.log(err);

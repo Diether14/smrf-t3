@@ -41,13 +41,12 @@ export class LoginComponent implements OnInit {
     //     'Content-Type':  'application/json'
     //   })
     // };
-    const options = { headers: new HttpHeaders().set('Content-Type', 'application/json') };
+    const options = { headers: new HttpHeaders().set('Content-Type', 'application/json'), withCredentials: true };
 
     this.http.post('/localapi/login', json, options)
         .subscribe(
           res => {
             this.apiResponse = res;
-            // console.log(this.apiResponse);
 
             if (this.apiResponse != null) {
               const name = this.apiResponse[0].FIRST_NAME + ' ' + this.apiResponse[0].MIDDLE_NAME + ' ' + this.apiResponse[0].LAST_NAME;
@@ -109,7 +108,6 @@ export class LoginComponent implements OnInit {
     await this.http.get(url)
               .subscribe(
                 res => {
-                  // console.log(res);
                   this.response = res;
 
                   if (this.response.length > 0) {

@@ -3,12 +3,12 @@ import { AppConfigService } from './_services';
 import { SidenavServiceService } from './sidenav-service.service';
 import { UserComponent } from './user/user.component';
 import { UserService } from './user.service';
-import { Component, ViewChild, OnInit, AfterContentChecked, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterContentChecked, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, NavigationEnd } from '@angular/router';
 import { MatDrawer } from '@angular/material/sidenav';
 import { MediaMatcher } from '@angular/cdk/layout';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 
 @Component({
@@ -16,9 +16,9 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit, AfterContentChecked {
+export class AppComponent implements OnInit, AfterContentChecked, AfterViewInit {
 
-  @ViewChild('drawer', {static: true}) public drawer: MatDrawer;
+  @ViewChild('drawer') public drawer: MatDrawer;
   title = 'service-maintenance';
   activeMenu: string;
   myImage: any;
@@ -32,13 +32,13 @@ export class AppComponent implements OnInit, AfterContentChecked {
   private mobileQueryListener: () => void;
 
   constructor(private appConfigService: AppConfigService,
-    public http: HttpClient,
-    public userService: UserService,
-    public dialog: MatDialog,
-    private route: Router,
-    public sidenavService: SidenavServiceService,
-    changeDetectorRef: ChangeDetectorRef,
-    media: MediaMatcher) {
+              public http: HttpClient,
+              public userService: UserService,
+              public dialog: MatDialog,
+              private route: Router,
+              public sidenavService: SidenavServiceService,
+              changeDetectorRef: ChangeDetectorRef,
+              media: MediaMatcher) {
       this.routeEvent(this.route);
       this.mobileQuery = media.matchMedia('(max-width: 600px)');
       this.mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -48,9 +48,13 @@ export class AppComponent implements OnInit, AfterContentChecked {
   ngOnInit() {
     // this.settings = this.appConfigService.settings;
 
-    // this.sidenavService.sideNavToggleSubject.subscribe(() => {
-    //   this.drawer.toggle();
-    // });
+  }
+
+  ngAfterViewInit() {
+    this.sidenavService.sideNavToggleSubject.subscribe((data) => {
+      let test;
+      (this.drawer ? this.drawer.toggle() : test = data);
+    });
   }
 
   ngAfterContentChecked() {
@@ -63,7 +67,6 @@ export class AppComponent implements OnInit, AfterContentChecked {
     this.status = status;
     status = status === 'wip' ? 2 : 1;
     this.userService.jobOrder = status;
-    // console.log(status);
   }
 
   selectMenu(active) {
@@ -72,8 +75,9 @@ export class AppComponent implements OnInit, AfterContentChecked {
 
   logout() {
     const url = '/localapi/logout';
+    const options = { headers: new HttpHeaders().set('Content-Type', 'application/json'), withCredentials: true };
 
-    this.http.get(url).subscribe(res => console.log(res), err => console.log(err));
+    this.http.get(url, options).subscribe(res => console.log(res), err => console.log(err));
     window.location.reload();
   }
 
@@ -99,5 +103,5 @@ export class AppComponent implements OnInit, AfterContentChecked {
       }
     });
   }
-  
+
 }

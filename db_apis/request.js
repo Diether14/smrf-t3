@@ -10,7 +10,7 @@ const all = async () => {
             type: oracledb.CURSOR
         }
     };
-
+    console.log('\x1b[31m', process.env.SCHEMA, '\x1b[0m');
     const result = await database.resultsetExecute(sql, bind);
     return result;
 };
@@ -79,8 +79,25 @@ const getRequestDetailsById = async (id) => {
 
     return result;
 };
-
 module.exports.getRequestDetailsById = getRequestDetailsById;
+
+const getRequestAttachmentsById = async (id) => {
+    const sql = `BEGIN MY_PKG.get_request_attachments(:r_id, :cursor); END;`;
+
+    const bind = {
+        r_id: id,
+        cursor: {
+            dir: oracledb.BIND_OUT,
+            type: oracledb.CURSOR
+        }
+    };
+
+    const result = await database.resultsetExecute(sql, bind);
+
+    return result;
+};
+
+module.exports.getRequestAttachmentsById = getRequestAttachmentsById;
 
 const updateStatus = async (data) => {
 
@@ -118,14 +135,12 @@ const updateStatus = async (data) => {
 module.exports.updateStatus = updateStatus;
 
 const updateRequestDetails = async (data) => {
-    // console.log(data.body);
-    // return;
     const sql = `BEGIN MY_PKG.update_request_details(:reqArr, :output); END;`;
     const reqDetails = [];
 
     let connect;
     connect = await oracledb.getConnection();
-    const T_RECTYPE = await connect.getDbObjectClass("XXDOM.T_RECTYPE");
+    const T_RECTYPE = await connect.getDbObjectClass( process.env.SCHEMA + '.T_RECTYPE');
 
     data.body.forEach(element => {
         const json = {

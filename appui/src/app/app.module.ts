@@ -1,3 +1,4 @@
+import { SidenavServiceService } from './sidenav-service.service';
 
 
 import { AuthenticateGuard } from './authenticate.guard';
@@ -126,7 +127,8 @@ import * as $ from 'jquery';
     MatCheckboxModule
 
   ],
-  providers: [ AppConfigService ],
+  providers: [ AppConfigService,
+  SidenavServiceService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

@@ -2,9 +2,10 @@ const request   = require('../db_apis/request.js');
 const session   = require('express-session');
 const oracledb  = require('oracledb');
 const database  = require('../services/database.js');
+const fs        = require('fs');
 
 const requestData = (req) => {
-    // const loggedIn = session.username;
+    // const loggedIn = req.session.username;
     // const user = loggedIn.split('|');
     const requestID = [];
     const requestRemarks = [];
@@ -48,36 +49,54 @@ const baseQuery =
                             :approved_by,
                             :status,
                             :inbv,
+                            :attachment_files,
                             :success); END;`;
 
 const requestPost = async (req, res, next) => {
     
     // console.log(baseQuery)
-
+    let files = []
+    try {
+       files =  moveUploadedFiles(req.files.reqAttachment);
+    } catch (error) {
+        console.log('\x1b[31m', 'ERROR: CAN NOT UPLOAD FILES', '\x1b[0m');
+    }
     let connect;
     connect = await oracledb.getConnection();
-    const RecTypeClass = await connect.getDbObjectClass("xxdom.t_rectype");
+    const RecTypeClass = await connect.getDbObjectClass(process.env.SCHEMA + '.t_rectype');
+    const attachmentCollection = await connect.getDbObjectClass(process.env.SCHEMA + '.ATTACHMENT_COLLECTION');
+    const attachment_files = new attachmentCollection(files);
+    // const RecTypeClass = await connect.getDbObjectClass("t_rectype");
 
 
     const reqDtlIDs  = [];
     const reqTypeIDs = [];
     const reqRemarks = [];
     const reqRows = [];
-
-    req.body.reqDetails.forEach(element => {
-        // reqDtlIDs.push(parseInt(element.dtl_id))
-        // reqTypeIDs.push(parseInt(element.request));
-        // reqRemarks.push(element.remarks);
-
-        const json = {REQ_DTL_ID: parseInt(element.dtl_id),
-                    REQ_REMARKS: element.remarks,
-                    SR_TYPE_ID: parseInt(element.request)};
-
-        reqRows.push(json);
+    if(req.body.reqDetails) {
+        if(Array.isArray(req.body.reqDetails)){
+            req.body.reqDetails.forEach(element => {
+                // reqDtlIDs.push(parseInt(element.dtl_id))
+                // reqTypeIDs.push(parseInt(element.request));
+                // reqRemarks.push(element.remarks);
+                let obj = JSON.parse(element);
+                const json = {REQ_DTL_ID: parseInt(obj.dtl_id),
+                            REQ_REMARKS: obj.remarks,
+                            SR_TYPE_ID: parseInt(obj.request)};
         
-
-    });
-
+                reqRows.push(json);
+                
+        
+            });
+        } else {
+            let obj = JSON.parse(req.body.reqDetails);
+            const json = {REQ_DTL_ID: parseInt(obj.dtl_id),
+                        REQ_REMARKS: obj.remarks,
+                        SR_TYPE_ID: parseInt(obj.request)};
+    
+            reqRows.push(json);
+        }
+    }
     const binds = {
         req_id: {
             type: oracledb.NUMBER,
@@ -124,32 +143,19 @@ const requestPost = async (req, res, next) => {
             dir: oracledb.BIND_IN,
             val: parseInt(req.body.status)
         },
-        // reqDtlIDs: {
-        //     type: oracledb.NUMBER,
-        //     dir: oracledb.BIND_IN,
-        //     val: reqDtlIDs
-        // },
-        // reqTypeIDs: {
-        //     type: oracledb.NUMBER,
-        //     dir: oracledb.BIND_IN,
-        //     val: reqTypeIDs
-        // },
-        // reqRemarks: {
-        //     type: oracledb.VARCHAR,
-        //     dir: oracledb.BIND_IN,
-        //     val: reqRemarks
-        // },
         inbv: { 
             type: RecTypeClass, 
             dir: oracledb.BIND_IN,
-            val: reqRows },
+            val: reqRows
+        },
+        attachment_files,
         success: {
             dir: oracledb.BIND_OUT,
             type: oracledb.VARCHAR
         }
     }
 
-    console.log(binds);
+    console.log('\x1b[32m', binds, '\x1b[0m');
 
     try {
         const result = await database.simpleExecute(baseQuery, binds);
@@ -186,10 +192,12 @@ const getRequestById = async (req, res, next) => {
     
         const resultRequest = await request.getRequestById(json);
         const resultDetails = await request.getRequestDetailsById(json);
+        const resultAttachments = await request.getRequestAttachmentsById(id);
 
         const result = {
             request: resultRequest,
-            details: resultDetails
+            details: resultDetails,
+            attachments: resultAttachments
         };
 
         res.status(200).json(result);
@@ -235,3 +243,60 @@ const transfer = async (req, res, next) => {
 };
 
 module.exports.transfer = transfer;
+
+const moveUploadedFiles = (files) => {
+    const path = 'uploads/appui/';
+    let fullpath = '';
+    let accesspath = '';
+    let arr = [];
+    if(files) {
+        console.log(files);
+        if(Array.isArray(files)) {
+            files.forEach((el, i) => {
+                const tmp_name = Date.now() + '_' + el.name;
+                fullpath = path + tmp_name;
+                el.mv(fullpath, (err) => {
+                    if(err) {
+                        console.log('\x1b[31m', err, '\x1b[0m');
+                    }
+                });
+                arr.push({
+                    ID: null,
+                    REQ_ID: null,
+                    IMG: tmp_name,
+                    DATE_CREATED: null
+                });
+            });
+        } else {
+            const tmp_name = Date.now() + '_' + files.name;
+            fullpath = path + tmp_name;
+            files.mv(fullpath, (err) => {
+            if(err) {
+                console.log('\x1b[31m', err, '\x1b[0m');
+            }
+            });
+            arr.push({
+                ID: null,
+                REQ_ID: null,
+                IMG: tmp_name,
+                DATE_CREATED: null
+            });
+        }
+    }
+    return arr;
+}
+
+const getImage = async (req, res, next) => {
+    fs.readFile('uploads/appui/' + req.params.img, (err, file) => {
+        if (err) {
+            res.writeHead(400, {'Content-type':'text/html'})
+            console.log(err);
+            res.end("No such image");    
+        } else {
+            res.writeHead(200,{'Content-type':'image/jpg'});
+            res.end(file);
+        }
+    });
+}
+
+module.exports.getImage = getImage;

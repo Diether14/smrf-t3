@@ -1,18 +1,16 @@
-const session = require('express-session');
-
 async function get(req, res, next) {
-    if (!session.username) {
-        session.username = [];
+    if (!req.session.username) {
+        req.session.username = [];
     }
 
-    console.log(session.username);
-    res.status(201).json(session.username);
+    console.log(req.session.username);
+    res.status(201).json(req.session.username);
 }
 
 module.exports.get = get;
 
 const destroy = async () => {
-    session.username = [];
+    req.session.username = [];
 };
 
 module.exports.destroy = destroy;

@@ -27,7 +27,6 @@ export class ManageJobOrderComponent implements OnInit {
   }
 
   ngAfterContentChecked() {
-    // console.log(this.actComponent.reqStatus)
     this.withJobOrder = (this.actComponent.reqStatus > 1);
   }
 

@@ -27,7 +27,6 @@ export class ManageRequestsComponent implements OnInit {
     this.assignedPerson = this.userService.userLevel === 'requestor' ? 'Dept. Head' : 'Created By';
 
     await this.getAllRequest();
-    console.log(this.req);
 
     this.req.forEach(element => {
         // console.log(element.REQ_STATUS);

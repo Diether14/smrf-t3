@@ -58,7 +58,6 @@ export class JobOrderFormComponent implements OnInit {
     await this.getChief();
     this.userLevel = this.userService.userLevel;
 
-    // console.log(this.requestDetails);
     if (this.manageRequest === true) {
       this.attrOther = true;
       this.btnTxt = 'UPDATE';
@@ -99,7 +98,6 @@ export class JobOrderFormComponent implements OnInit {
     this.http.get(url)
             .subscribe(
               res => {
-                  // console.log(res);
                   this.resEstimatedCompletion = res[keyJobs][0].DATE_REQUIRED;
                   this.jobOrderEstDateRequired = res[keyJobs][0].DATE_REQUIRED;
 
@@ -173,7 +171,6 @@ export class JobOrderFormComponent implements OnInit {
       }
     });
 
-    console.log(this.manpowerList);
     return false;
   }
 
@@ -234,8 +231,7 @@ export class JobOrderFormComponent implements OnInit {
       error = 0;
     }
 
-    if (error === 0) {    
-      console.log(this.jobOrderIssuedTo)
+    if (error === 0) {
         const json = {
           id,
           work_required: this.jobOrderWorkRequired,

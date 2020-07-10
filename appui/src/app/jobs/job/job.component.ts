@@ -34,8 +34,6 @@ export class JobComponent implements OnInit, AfterContentChecked {
       }
     });
 
-    console.log(this.userService.jobOrder)
-
     if (this.userService.jobOrder === 1) {
       this.jobRouter = '/jobs/';
       this.jobTitle = 'Pick "NEW" Service Requests';

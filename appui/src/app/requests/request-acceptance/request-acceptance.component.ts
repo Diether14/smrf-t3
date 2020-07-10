@@ -23,7 +23,6 @@ export class RequestAcceptanceComponent implements OnInit {
   }
 
   ngAfterContentChecked() {
-    // console.log(this.actComponent.reqStatus)
     this.completed = (this.RequSummComponent.reqStatus == 3);
   }
 

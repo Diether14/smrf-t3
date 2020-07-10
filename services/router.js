@@ -15,7 +15,7 @@ router.route('/login')
   .post(login.post);
 
 router.route('/logout')
-  .get(session.destroy);
+  .get(login.logout);
 
 router.route('/approver/:id')
   .get(personnel.getApprover);
@@ -79,5 +79,8 @@ router.route('/users/dept/:id')
 
 router.route('/dept/chief/:id')
   .get(personnel.getChiefByDept);
+
+router.route('/uploads/appui/:img')
+  .get(request.getImage);
 
 module.exports = router;

@@ -52,7 +52,12 @@ const getAllUser = async (dept) => {
     const sql = `SELECT 
                     ID,
                     CONCAT(CONCAT(LAST_NAME, ', '), FIRST_NAME) FULL_NAME
-                 FROM xxdom.tbl_user WHERE department = :dept`;
+                 FROM ${process.env.SCHEMA}.tbl_user WHERE department = :dept`;
+    
+      // const sql = `SELECT 
+      //             ID,
+      //             CONCAT(CONCAT(LAST_NAME, ', '), FIRST_NAME) FULL_NAME
+      //           FROM tbl_user WHERE department = :dept`;
     const binds = {
         dept: {
           type: oracledb.NUMBER,
@@ -72,7 +77,7 @@ const getChiefByDept = async (dept) => {
   const sql = `SELECT 
                   ID,
                   CONCAT(CONCAT(LAST_NAME, ', '), FIRST_NAME) FULL_NAME
-               FROM xxdom.tbl_user WHERE department = :dept AND user_level = 'chief'`;
+               FROM ${process.env.SCHEMA}.tbl_user WHERE department = :dept AND user_level = 'chief'`;
   const binds = {
       dept: {
         type: oracledb.NUMBER,

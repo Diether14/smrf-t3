@@ -1,7 +1,7 @@
 const oracle = require('oracledb');
 const database = require('../services/database.js');
 
-const sql = `INSERT INTO XXDOM.TBL_USER 
+const sql = `INSERT INTO ${process.env.SCHEMA}.TBL_USER 
                 (LAST_NAME, FIRST_NAME, MIDDLE_NAME, USERNAME, PASSWORD, USER_LEVEL, DEPARTMENT) 
                 VALUES 
                 (:last_name, :first_name, :middle_name, :username, 'welcome', :user_level, :department)`;

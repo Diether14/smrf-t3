@@ -9,25 +9,24 @@ async function initialize() {
 
 module.exports.initialize = initialize;
 
-function simpleExecute(statement, binds = [], opts = {}) {
+function simpleExecute(statement, binds = [], opts = {}, autoCommit = true) {
   return new Promise(async (resolve, reject) => {
     let conn;
  
     opts.outFormat = oracledb.OBJECT;
-    opts.autoCommit = true;
+    opts.autoCommit = autoCommit;
  
     try {
       conn = await oracledb.getConnection();
- 
+
       const result = await conn.execute(statement, binds, opts);
-//  console.log(result)
       resolve(result);
     } catch (err) {
         reject(err);
     } finally {
       if (conn) { // conn assignment worked, need to close
         try {
-          await conn.close();
+          await conn.close({drop: true});
         } catch (err) {
           console.log(err);
         }
@@ -82,10 +81,7 @@ function resultsetExecute(statement, binds = [], opts = {}) {
     try {
 
       connection = await oracledb.getConnection();
-  
       const result = await connection.execute(statement, binds);
-      // console.log("Cursor metadata:");
-      // console.log(result.outBinds.cursor.metaData);
   
       // Fetch rows from the REF CURSOR.
       // If getRows(numRows) returns:
@@ -93,15 +89,12 @@ function resultsetExecute(statement, binds = [], opts = {}) {
       //   Fewer than numRows rows => this was the last set of rows to get
       //   Exactly numRows rows    => there may be more rows to fetch
       const resultSet = result.outBinds.cursor;
-      
       let procJson = [];
       let rows;
       let count = 0;
       do {
         rows = await resultSet.getRows(numRows); // get numRows rows at a time
         if (rows.length > 0) {
-          // console.log("getRows(): Got " + rows.length + " rows");
-          // console.log(count);
           
           for (var i = 0; i < rows.length; i++) {
             procJson.push({});
@@ -116,8 +109,16 @@ function resultsetExecute(statement, binds = [], opts = {}) {
       // always close the ResultSet
       await resultSet.close();
 
-      // console.log(procJson)
-      resolve(procJson)
+      const counter = await withCounter(result);
+      if(counter !== false) {
+        const res = {
+          counter: counter,
+          data: procJson
+        }
+        resolve(res);
+      } else {
+        resolve(procJson)
+      }
   
     } catch (err) {
       console.error(err);
@@ -136,3 +137,33 @@ function resultsetExecute(statement, binds = [], opts = {}) {
 }
  
 module.exports.resultsetExecute = resultsetExecute;
+
+async function getConnection() {
+  return await oracledb.getConnection();
+}
+module.exports.getConnection = getConnection;
+
+async function getDbObjectClass(classname) {
+      let arr = [];
+      arr = classname.split('.');
+      if(arr[0].toUpperCase() === 'XXDOM'){
+        arr = arr.shift();
+      }
+      const type = arr.join('.');
+      connection = await oracledb.getConnection();
+      return await connection.getDbObjectClass(type);
+}
+module.exports.getDbObjectClass = getDbObjectClass;
+
+async function withCounter(result) {
+  let counter_rs = result.outBinds.counter || 0 ;
+  if(counter_rs) {
+    const counter_arr = await counter_rs.getRow();
+    const counter_val = counter_arr[0];
+    await counter_rs.close();
+    return counter_val;
+  }
+  return false;
+}
+
+module.exports.withCounter = withCounter;

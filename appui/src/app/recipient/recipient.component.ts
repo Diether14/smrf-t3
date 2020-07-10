@@ -38,7 +38,6 @@ export class RecipientComponent implements OnInit {
     await this.http.get(url)
           .subscribe(
             res => {
-              console.log(res);
               this.recipient = res;
             },
             err => {

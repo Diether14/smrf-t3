@@ -2,6 +2,7 @@ import { UserService } from './../../user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, Injectable, Input, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
@@ -31,25 +32,25 @@ export class RequestSummaryComponent implements OnInit {
 
   serviceRep;
   reqIncharge;
-  
+
   @Input() setRequest;
   @Input() transferRequest = false;
   successTransfer = true;
   userLevel: string;
+  attachments: any;
 
   constructor(public http: HttpClient,
               public route: ActivatedRoute,
               public router: Router,
-              public userService: UserService) { }
+              public userService: UserService,
+              private sanitizer: DomSanitizer) { }
 
   async ngOnInit() {
-    
     // this.setRequest = 12;
 
     this.userLevel = this.userService.userLevel;
     await this.getRequest();
     // this.reqDetails = this.setRequest.req_details;
-    // console.log(this.setRequest);
 
     this.getServiceRepresentative();
   }
@@ -60,6 +61,7 @@ export class RequestSummaryComponent implements OnInit {
     const result = await this.http.get(url).toPromise();
     const request = 'request';
     const details = 'details';
+    const attachments = 'attachments';
 
     this.controlNumber = result[request][0].REQ_ID;
     this.requestedPriority = result[request][0].REQ_PRIORITY;
@@ -71,11 +73,14 @@ export class RequestSummaryComponent implements OnInit {
     this.reqNotes = result[request][0].REQ_NOTES;
     this.reqDetails = result[details];
     this.deptHead = result[request][0].DEPT_HEAD;
-    
+    this.attachments = result[attachments];
+    await this.attachments.forEach((el, i) => {
+      this.attachments[i].IMG = this.sanitizer.bypassSecurityTrustUrl('localapi/uploads/appui/' + el.IMG);
+    });
+
     // return result;
     // this.setRequest.controlNumber = this.controlNumber;
 
-    // console.log(this.reques);
   }
 
   setAttachment() {
@@ -96,13 +101,11 @@ export class RequestSummaryComponent implements OnInit {
 
   selectChangeHandler(event) {
     // update the ui
-    console.log(event);
     this.reqIncharge = this.serviceRep.find(el => el.PERSON_ID === event).FULL_NAME;
     // this.reqRepPersonID = this.serviceRep[event.value].PERSON_ID;
   }
 
   transferManpower(manpower) {
-    // console.log(manpower);
     const url = '/localapi/request/transfer';
     const id = this.controlNumber;
 

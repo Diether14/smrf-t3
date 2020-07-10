@@ -42,7 +42,11 @@
                     Attachment: 
                     <mat-slide-toggle class="to-gray" (click)="setAttachment()">{{ attrAttachment === false ? 'Show' : 'Hide' }}</mat-slide-toggle>
                 </label>
-                <img *ngIf="attrAttachment" src="{{ requestedAttachment }}" class="w-100" />
+                <div *ngIf="attrAttachment" >
+                    <div *ngFor="let attachment of attachments">
+                        <img [src]="attachment.IMG" class="w-100" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>

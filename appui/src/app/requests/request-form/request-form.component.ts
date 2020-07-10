@@ -6,7 +6,7 @@ import { recipient } from '../../recipient';
 import { requestList } from '../../request-list';
 import { Component, OnInit, Injectable, Input, Output, EventEmitter, ModuleWithComponentFactories,
          AfterContentChecked } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import * as moment from 'moment';
 
 @Injectable({
@@ -48,11 +48,14 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
   reqRepID;
   reqRepPersonID;
 
+  attch: any;
+
   @Input() requestType: any;
   @Input() requestId: number;
   @Input() requestDetails;
   myImage: any;
   widthContent = false;
+  fileToPush = [];
 
   constructor(public http: HttpClient, public userService: UserService, public dialog: MatDialog) { }
 
@@ -66,7 +69,7 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
 
   ngAfterContentChecked() {
     this.getDetails();
-    this.setRequestList;
+    // this.setRequestList;
     this.reqAttachment = this.userService.srvcRequestAttachment;
   }
 
@@ -125,7 +128,6 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
   // Set priority if urgent / not.
   priority(val) {
     this.reqPriority = val;
-    console.log(val);
   }
 
   requestStatus() {
@@ -143,22 +145,42 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
 
       if (this.errorNum === 0) {
 
-          this.json = {
-            reqRecipient: this.userService.recipient,
-            reqDateRequired: moment(this.reqDateRequired).format('DD-MMM-YYYY HH:mm:ss').toString(),
-            reqPriority: this.reqPriority,
-            reqMachine: this.reqMachine,
-            // reqDepartment: this.userService.user.department,
-            reqRepresentative: this.reqRepresentative,
-            reqDetails: this.reqDetails,
-            reqAttachment: this.reqAttachment,
-            reqNotes: this.reqNotes,
-            reqRepPersonID: this.reqRepPersonID,
-            createdBy: this.userService.user.id,
-            status: this.requestStatus()
-          };
-
-          this.http.post('/localapi/requests?request_id=0', this.json)
+          // this.json = {
+          //   reqRecipient: this.userService.recipient,
+          //   reqDateRequired: moment(this.reqDateRequired).format('DD-MMM-YYYY HH:mm:ss').toString(),
+          //   reqPriority: this.reqPriority,
+          //   reqMachine: this.reqMachine,
+          //   // reqDepartment: this.userService.user.department,
+          //   reqRepresentative: this.reqRepresentative,
+          //   reqDetails: this.reqDetails,
+          //   reqAttachment: this.attch,
+          //   reqNotes: this.reqNotes,
+          //   reqRepPersonID: this.reqRepPersonID,
+          //   createdBy: this.userService.user.id,
+          //   status: this.requestStatus()
+          // };
+          const formData = new FormData();
+          formData.append('reqRecipient', this.userService.recipient);
+          formData.append('reqDateRequired',  moment(this.reqDateRequired).format('DD-MMM-YYYY HH:mm:ss').toString());
+          formData.append('reqPriority', this.reqPriority);
+          formData.append('reqMachine', this.reqMachine);
+          formData.append('createdBy', this.userService.user.id);
+          formData.append('reqRepresentative', this.reqRepresentative);
+          this.reqDetails.forEach((el, i) => {
+            formData.append('reqDetails', JSON.stringify(el));
+          });
+          this.fileToPush.forEach((el, i) => {
+            formData.append('reqAttachment', el, el.name);
+          });
+          formData.append('reqNotes', this.reqNotes || '');
+          formData.append('reqRepPersonID', this.reqRepPersonID);
+          formData.append('status', this.requestStatus().toString());
+          const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type':  'multipart/form-data',
+            }),
+        };
+          this.http.post('/localapi/requests?request_id=0', formData/* , httpOptions */)
                   .subscribe(
                     res => {
                       this.response = res;
@@ -179,8 +201,6 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
                       console.log(err);
                     }
                   );
-
-          console.log(this.json);
       }
   }
 
@@ -217,7 +237,6 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
     this.reqRemarks = '';
     ($('#reqSelect') as any).focus();
 
-    console.log(this.reqDetails);
   }
 
   // Remove a request.
@@ -237,7 +256,6 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
              .subscribe(
                  data => {
                      this.serviceRep = data;
-                     console.log(data)
                  },
                  err => {
                      console.log(err);
@@ -266,7 +284,6 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
                  data => {
                    this.setRequestList = [];
                    this.setRequestList = data;
-                   console.log(this.setRequestList);
                  },
                  err => {
                      console.log(err);
@@ -276,7 +293,6 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
 
   selectChangeHandler(event) {
     // update the ui
-    console.log(event);
     this.reqIncharge    = this.serviceRep.find(el => el.REP_ID === event.value).FULL_NAME;
     this.reqRepPersonID = this.serviceRep.find(el => el.REP_ID === event.value).PERSON_ID;
     this.getRequestList(this.serviceRep.find(el => el.REP_ID === event.value).REP_ID);
@@ -287,7 +303,8 @@ export class RequestFormComponent implements OnInit, AfterContentChecked {
     const reader = new FileReader();
 
     reader.readAsDataURL(file[0]);
-
+    this.fileToPush.push(file[0]);
+    // tslint:disable-next-line: variable-name
     reader.onload = (_event) => {
       this.userService.srvcRequestAttachment.push(reader.result);
     };
