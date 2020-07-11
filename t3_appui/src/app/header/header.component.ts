@@ -1,3 +1,4 @@
+import { AddRowComponent } from './../modals/add-row/add-row/add-row.component';
 import { ServertimeService } from './../services/servertime.service';
 import { HeaderFactory } from './../classes/header-factory';
 import { ManpowerService } from './../services/manpower.service';
@@ -410,5 +411,10 @@ export class HeaderComponent implements OnInit, AfterContentChecked, AfterViewIn
                 console.log(err);
             }
         );
+    }
+
+    addRow() {
+        const modalRef = this.modalService.open(AddRowComponent, {size: 'md'});
+        modalRef.componentInstance.actualStart = this.headerObj.ACTUAL_START;
     }
 }

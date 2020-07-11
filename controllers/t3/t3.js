@@ -110,12 +110,16 @@ const get = async (req, res, next) => {
 
         const rows = await t3Batch.getBatchinfo(context);
         // rows = JSON.parse(rows);
-        if (rows.batch_collection) {
-            rows.header_obj = rows.batch_collection[0];
-            rows.isExisting = true;
-            delete rows.batch_collection;
-            console.log(rows);
-            res.status(200).json(rows);
+        if (rows) {
+            if (rows.batch_collection) {
+                rows.header_obj = rows.batch_collection[0];
+                rows.isExisting = true;
+                delete rows.batch_collection;
+                console.log(rows);
+                res.status(200).json(rows);
+            } else {
+                res.status(200).json({isExisting: false});
+            }
         } else {
             res.status(200).json({isExisting: false});
         }

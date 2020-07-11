@@ -27,6 +27,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { HeaderModalComponent } from './header-modal/header-modal.component';
 import { CounterPipePipe } from './counter-pipe.pipe';
 import { LoginComponent } from './modals/login/login.component';
+import { AddRowComponent } from './modals/add-row/add-row/add-row.component';
 
 @NgModule({
 declarations: [
@@ -42,13 +43,15 @@ ActivityDowntimeComponent,
 AccountsComponent,
 HeaderModalComponent,
 CounterPipePipe,
-LoginComponent
+LoginComponent,
+AddRowComponent
 ],
 entryComponents: [
 ActivityDetailsComponent,
 ActivityDowntimeComponent,
 HeaderModalComponent,
-LoginComponent
+LoginComponent,
+AddRowComponent
 ],
 imports: [
 AutosizeModule,

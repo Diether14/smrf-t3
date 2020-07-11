@@ -138,41 +138,6 @@ export class ActivityService {
     this.activitiesSource.next(activitiesArr);
   }
 
-  addActivity(activity: any) {
-    if (!this.headerObj.BARCODE) {
-      alert('Scan First!');
-      return;
-    }
-    activity.START_TIME = this.actualTime.start;
-    activity.END_TIME = this.actualTime.end;
-    if (this.actualTime.start.isAfter(this.expectedTime.start)) {
-      this.setFillers();
-    } else if (this.actualTime.start.isBefore(this.expectedTime.start)) {
-      if (this.activities.length > 0) {
-        if (confirm('End prod?')) {
-          this.headerObj.STATUS = 'open';
-          this.headerObj.ACTUAL_END = new Date();
-          activity.START_TIME = moment(this.actualTime.exact).startOf('hour');
-          activity.END_TIME = this.actualTime.exact;
-        } else {
-          return;
-        }
-      } else {
-        if (this.actualTime.start.isBefore(this.shifts[this.headerObj.SHIFT].first_hour)) {
-          activity.START_TIME = this.shifts[this.headerObj.SHIFT].first_hour;
-          activity.END_TIME = moment(activity.START_TIME).add(1, 'hours');
-        }
-      }
-    } else {
-      alert('just right hehez');
-      // return;
-      // return;
-    }
-    const newAct = this.activityFactory.createActivity(activity);
-    this.activities.unshift(newAct);
-    this.logTime();
-  }
-
   logTime() {
     const diff = this.actualTime.start.diff(this.expectedTime.start, 'hours');
   }
@@ -219,6 +184,65 @@ export class ActivityService {
           this.downtimeTypeSource.next(res);
         }
     );
+  }
+
+  addCustomActivity(activity: Activity) {
+    this.setCustomFillers(activity);
+  }
+
+  isActivityAllowed(actStartTime: string) {
+    const diff = this.activities.find((activity) => (moment(activity.START_TIME).diff(moment(actStartTime), 'hours') === 0)) || null;
+    if (diff) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  setCustomFillers(activity: Activity) {
+    let startAct: Activity;
+    let endAct: Activity;
+    let isPush: boolean;
+
+    let diff = moment(activity.START_TIME).diff(this.activities[0].START_TIME, 'hours');
+    if (diff < 0) {
+      diff = moment(this.activities[this.activities.length - 1].START_TIME).diff(activity.START_TIME, 'hours');
+      startAct = activity;
+      endAct = this.activities[this.activities.length - 1];
+      isPush = true;
+    } else {
+      startAct = this.activities[0];
+      endAct = activity;
+      isPush = false;
+    }
+    console.log(diff);
+    let filler: Activity;
+    let start: string;
+    let end: string;
+    for (let index = 0; index < diff; index++) {
+      if (isPush) {
+        start = moment(startAct.END_TIME).subtract(index, 'hours').format('DD-MMM-YYYY HH:mm:ss');
+        end = moment(start).add(1, 'hours').format('DD-MMM-YYYY HH:mm:ss');
+      } else {
+        start = moment(startAct.END_TIME).add(index, 'hours').format('DD-MMM-YYYY HH:mm:ss');
+        end = moment(start).add(1, 'hours').format('DD-MMM-YYYY HH:mm:ss');
+      }
+      filler = this.activityFactory.createActivity({
+        HEADER_ID       : this.headerObj.ID,
+        START_TIME      : start,
+        END_TIME        : end,
+        LAST_UPDATED_BY : null,
+        DATE_ENTERED    : this.servertime.format('DD/MMM/YY'),
+        DATE_UPDATED    : this.servertime.format('DD/MMM/YY'),
+        IS_NEW          : 1,
+        IS_CHANGED      : 0
+      });
+      if (isPush) {
+        this.activities.push(filler);
+      } else {
+        this.activities.unshift(filler);
+      }
+    }
   }
 
 }

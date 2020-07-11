@@ -15,6 +15,7 @@ import { ActivityDetailsComponent } from '../activity-details/activity-details.c
 import { ActivityDowntimeComponent } from '../activity-downtime/activity-downtime.component';
 import { UserService } from './../services/user.service';
 import Swal from 'sweetalert2';
+import { AddRowComponent } from '../modals/add-row/add-row/add-row.component';
 
 @Component({
   selector: 'app-activity',
@@ -191,6 +192,11 @@ export class ActivityComponent implements OnInit, AfterContentChecked {
 
   detectChange() {
     this.cdr.detectChanges();
+  }
+
+  addRow() {
+    const modalRef = this.modalService.open(AddRowComponent, {size: 'md'});
+    // modalRef.componentInstance.actualStart = this.headerObj.ACTUAL_START;
   }
 
 }

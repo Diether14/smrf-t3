@@ -26,6 +26,7 @@
 
     <div class="table-responsive">
         <h6 class="text-center text-muted text-uppercase">Activity</h6>
+        <button class="btn-sm btn-success btn rounded mb-2" (click)="addRow()" *ngIf="isAuthorized && activeUser.USER_TYPE >= 3">Add Row</button>
         <table class="table table-bordered table-sm table-hover text-center" id="table_activity">
             <thead class="text-capitalize">
                 <tr>
