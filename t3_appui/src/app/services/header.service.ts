@@ -135,7 +135,7 @@ export class HeaderService {
               this.getDataRes = res;
               Swal.close();
               if (this.getDataRes.isExisting) {
-                this.getDataRes.header_obj.BARCODE = barcodeNum;
+                this.getDataRes.header_obj.BARCODE = barcodeNum.toUpperCase();
                 this.currentData = this.getDataRes;
                 this.setHeaderObj(this.getDataRes);
               } else {

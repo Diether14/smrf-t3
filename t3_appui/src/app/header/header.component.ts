@@ -181,7 +181,7 @@ export class HeaderComponent implements OnInit, AfterContentChecked, AfterViewIn
 
     async ngOnInit() {
         // this.headerService.getData('163178');
-        // this.barcode();
+        this.barcode();
     }
 
     btnSee() {
@@ -411,10 +411,5 @@ export class HeaderComponent implements OnInit, AfterContentChecked, AfterViewIn
                 console.log(err);
             }
         );
-    }
-
-    addRow() {
-        const modalRef = this.modalService.open(AddRowComponent, {size: 'md'});
-        modalRef.componentInstance.actualStart = this.headerObj.ACTUAL_START;
     }
 }
