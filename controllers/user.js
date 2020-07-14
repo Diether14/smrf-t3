@@ -15,7 +15,7 @@ const post = async (req, res, next) => {
 
         res.status(201).json(newUser);
     } catch(error) {
-        next(err);
+        next(error);
     }
 };
 
