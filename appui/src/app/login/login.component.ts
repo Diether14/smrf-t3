@@ -92,7 +92,7 @@ export class LoginComponent implements OnInit {
       if (auth.includes(this.userService.userLevel)) {
         this.router.navigate(['/request']);
       } else {
-        if (this.userService.userLevel == 'head') {
+        if (this.userService.userLevel === 'head') {
           this.router.navigate(['/manage-request']);
         } else {
           this.router.navigate(['/job']);

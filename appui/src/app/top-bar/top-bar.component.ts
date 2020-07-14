@@ -24,6 +24,7 @@ export class TopBarComponent implements OnInit, AfterContentChecked {
   user;
   response;
   progressMode = 'determinate';
+  userProfile: any;
 
   constructor(
     public http: HttpClient,
@@ -40,6 +41,7 @@ export class TopBarComponent implements OnInit, AfterContentChecked {
 
   ngAfterContentChecked() {
     this.user = this.userService.userLoggedIn;
+    this.userProfile = this.userService.user;
     this.progressMode = this.userService.progressMode;
     // this.getUser();
   }

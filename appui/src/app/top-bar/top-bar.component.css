@@ -37,3 +37,8 @@ nav {
     right: 0;
     z-index: 100;
 }
+
+#avatar {
+    vertical-align: middle;
+    border-radius: 50%;
+}
