@@ -49,7 +49,9 @@ export class LoginComponent implements OnInit {
             this.apiResponse = res;
 
             if (this.apiResponse != null) {
-              const name = this.apiResponse[0].FIRST_NAME + ' ' + this.apiResponse[0].MIDDLE_NAME + ' ' + this.apiResponse[0].LAST_NAME;
+              const name = (this.apiResponse[0].FIRST_NAME || '') +
+               ' ' + (this.apiResponse[0].MIDDLE_NAME || '') +
+               ' ' + (this.apiResponse[0].LAST_NAME || '');
               const userLevel = this.apiResponse[0].USER_LEVEL;
               const id = this.apiResponse[0].ID;
               const dept = this.apiResponse[0].DEPARTMENT;
