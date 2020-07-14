@@ -1,3 +1,4 @@
+import { ServertimeService } from './servertime.service';
 import { Injectable} from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import * as moment from 'moment';
@@ -91,7 +92,13 @@ export class MaterialService {
       MATERIAL_DESC: 'C180x1.6 (正) A 20PC DW44602 印刷 PH [VC716AGBDP]',
       }
   ];
-  constructor() {
+  servertime: string;
+  constructor(private servertimeService: ServertimeService) {
+    servertimeService.time$.subscribe(
+      datetime => {
+          this.servertime = moment(datetime).format('DD-MMM-YYYY HH:mm:ss');
+      }
+    );
     this.materials$.subscribe(
       materials => {
         this.materials = materials;
@@ -102,6 +109,8 @@ export class MaterialService {
   setMaterials(materials: Array<any>) {
     const materialsArr = [];
     materials.forEach(element => {
+        (element.DATE_ENTERED ? element.DATE_ENTERED = moment(element.DATE_ENTERED).format() : element.DATE_ENTERED = this.servertime);
+        (element.DATE_UPDATED ? element.DATE_UPDATED = moment(element.DATE_UPDATED).format() : element.DATE_UPDATED = this.servertime);
         const material = new Material(element);
         materialsArr.push(material);
     });

@@ -154,11 +154,7 @@ export class ActivityService {
         HEADER_ID       : this.headerObj.ID,
         START_TIME      : this.expectedTime.start,
         END_TIME        : this.expectedTime.end,
-        LAST_UPDATED_BY : null,
-        DATE_ENTERED    : this.servertime.format('DD/MMM/YY'),
-        DATE_UPDATED    : this.servertime.format('DD/MMM/YY'),
         IS_NEW          : 1,
-        IS_CHANGED      : 0
       });
       this.activities.unshift(filler);
     }
@@ -231,11 +227,7 @@ export class ActivityService {
         HEADER_ID       : this.headerObj.ID,
         START_TIME      : start,
         END_TIME        : end,
-        LAST_UPDATED_BY : null,
-        DATE_ENTERED    : this.servertime.format('DD/MMM/YY'),
-        DATE_UPDATED    : this.servertime.format('DD/MMM/YY'),
         IS_NEW          : 1,
-        IS_CHANGED      : 0
       });
       if (isPush) {
         this.activities.push(filler);

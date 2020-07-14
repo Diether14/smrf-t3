@@ -1,5 +1,6 @@
 import { MaterialService } from './../services/material.service';
 import * as moment from 'moment';
+import { ServertimeService } from '../services/servertime.service';
 
 export default class Activity {
     ID: number;
@@ -17,7 +18,7 @@ export default class Activity {
     LAST_UPDATED_BY_NAME: string;
     IS_NEW: number;
     IS_CHANGED: number;
-
+    servertime: string;
     get PACKED_QTY() {
         let totalPacked = 0;
         this.ACTIVITY_DETAILS.forEach(element => {
@@ -79,7 +80,13 @@ export default class Activity {
         return this._START_TIME;
     }
 
-    constructor(jsonObj, private materialService: MaterialService) {
+    constructor(jsonObj, private materialService: MaterialService, private servertimeService: ServertimeService) {
+        servertimeService.time$.subscribe(
+            datetime => {
+                this.servertime = moment(datetime).format('DD-MMM-YYYY HH:mm:ss');
+            }
+        );
+
         this.ID = jsonObj.ID || null;
         this.HEADER_ID = jsonObj.HEADER_ID || null;
         this.START_TIME = moment(jsonObj.START_TIME).format() || '';
@@ -89,8 +96,8 @@ export default class Activity {
         this.REMARKS = jsonObj.REMARKS || '';
         this.LAST_UPDATED_BY_NAME = jsonObj.LAST_UPDATED_BY_NAME || '';
         this.LAST_UPDATED_BY = jsonObj.LAST_UPDATED_BY || 0;
-        this.DATE_ENTERED = moment(jsonObj.DATE_ENTERED).format() || '';
-        this.DATE_UPDATED = moment(jsonObj.DATE_UPDATED).format() || '';
+        (jsonObj.DATE_ENTERED ? this.DATE_ENTERED = moment(jsonObj.DATE_ENTERED).format() : this.DATE_ENTERED = this.servertime);
+        (jsonObj.DATE_UPDATED ? this.DATE_UPDATED = moment(jsonObj.DATE_UPDATED).format() : this.DATE_UPDATED = this.servertime);
         this.ACTIVITY_DETAILS = jsonObj.ACTIVITY_DETAILS || [];
         this.ACTIVITY_DOWNTIME = jsonObj.ACTIVITY_DOWNTIME || [];
         (jsonObj.IS_NEW === 0 ? this.IS_NEW = 0 : this.IS_NEW = 1);

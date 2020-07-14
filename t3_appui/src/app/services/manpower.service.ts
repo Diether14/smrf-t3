@@ -1,6 +1,8 @@
+import { ServertimeService } from './servertime.service';
 import { Injectable } from '@angular/core';
 import { Manpower } from '../classes/manpower';
 import { Subject } from 'rxjs';
+import * as moment from 'moment';
 
 @Injectable({
   providedIn: 'root'
@@ -88,7 +90,13 @@ export class ManpowerService {
       HEADER_ID       : null
     },
   ];
-  constructor() {
+  servertime: string;
+  constructor(private servertimeService: ServertimeService) {
+    servertimeService.time$.subscribe(
+      datetime => {
+          this.servertime = moment(datetime).format('DD-MMM-YYYY HH:mm:ss');
+      }
+    );
     this.manpower$.subscribe(
       manpowers => {
         this.manpowers = manpowers;
@@ -104,6 +112,8 @@ export class ManpowerService {
       if (actualManpower.length > 0) {
         manpowerObj = new Manpower(actualManpower[0]);
       } else {
+        el.DATE_ENTERED = this.servertime;
+        el.DATE_UPDATED = this.servertime;
         manpowerObj = new Manpower(el);
       }
       manpowerArr.push(manpowerObj);
