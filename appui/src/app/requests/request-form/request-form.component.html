@@ -106,7 +106,7 @@
             </mat-form-field>
         </div> -->
 
-        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4" *ngIf="reqDepartment === 7 || reqDepartment === 8">
+        <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4" *ngIf="reqDepartment === 8">
             <mat-form-field class="w-100">
                 <mat-label>Machine</mat-label>
                 <mat-select 
@@ -162,8 +162,7 @@
                     </mat-form-field>
                       &nbsp;
                     <div>
-                        <button class="btn btn-dark btn-sm"
-                            type="button"
+                        <button class="btn btn-dark btn-sm" 
                             title="Add Service"
                             (click)="setRequestDetails(reqService)">
                             &rarr;
@@ -202,7 +201,7 @@
     </div>
     
     <!-- Show only for user. -->
-    <div class="form-group row" *ngIf="userLevel === 'requestor'">
+    <div class="form-group row" *ngIf="userLevel === 'requestor' || userLevel === 'chief'">
         <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
             <app-recipient [recipientID]="reqRecipient"></app-recipient>
         </div>

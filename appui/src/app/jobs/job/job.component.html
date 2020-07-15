@@ -11,16 +11,18 @@
                     <table class="table table-bordered table-sm text-center" id="tbl_manage" width="100%">
                     <thead class="text-uppercase">
                         <tr>
+                            <th rowspan="2" class="align-middle">Job Order <br />No.</th>
                             <th rowspan="2" class="align-middle">Service <br />Status</th>
                             <th rowspan="2" class="align-middle">Requested <br />By</th>
                             <th rowspan="2" class="align-middle">Service <br />Type</th>
                             <th rowspan="2" class="align-middle">Remarks</th>
-                            <th rowspan="   2" class="align-middle">Service <br />Representative</th>
+                            <th rowspan="2" class="align-middle">Service <br />Representative</th>
                             <th rowspan="2" class="align-middle">Date <br />Submitted</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let req of requestsList; let i = index;" [routerLink]="[jobRouter, req.REQ_ID]">
+                            <td>{{ req.REQ_ID }}</td>
                             <td [class]="jobStatusText">{{ jobStatus | titlecase }}</td>
                             <td>{{ req.NAME_CREATED_BY }}</td>
                             <td>{{ req.REQ_PRIORITY }}</td>
@@ -32,7 +34,7 @@
                             </td>
                         </tr>
                         <tr *ngIf="requestsList.length === 0">
-                            <td colspan="6">No records found.</td>
+                            <td colspan="7">No records found.</td>
                         </tr>
                     </tbody>
                     </table>                     

@@ -50,8 +50,8 @@ export class LoginComponent implements OnInit {
 
             if (this.apiResponse != null) {
               const name = (this.apiResponse[0].FIRST_NAME || '') +
-               ' ' + (this.apiResponse[0].MIDDLE_NAME || '') +
-               ' ' + (this.apiResponse[0].LAST_NAME || '');
+              ' ' + (this.apiResponse[0].MIDDLE_NAME || '') +
+              ' ' + (this.apiResponse[0].LAST_NAME || '');
               const userLevel = this.apiResponse[0].USER_LEVEL;
               const id = this.apiResponse[0].ID;
               const dept = this.apiResponse[0].DEPARTMENT;
@@ -94,7 +94,7 @@ export class LoginComponent implements OnInit {
       if (auth.includes(this.userService.userLevel)) {
         this.router.navigate(['/request']);
       } else {
-        if (this.userService.userLevel === 'head') {
+        if (this.userService.userLevel == 'head') {
           this.router.navigate(['/manage-request']);
         } else {
           this.router.navigate(['/job']);

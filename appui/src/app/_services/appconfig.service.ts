@@ -22,7 +22,7 @@ export class AppConfigService  extends BaseService {
         // });
 
         this.getAPI(this.envUrl).subscribe((response: any) => {
-              console.log('response from the server:::', response);
+            //   console.log('response from the server:::', response);
               this.configSettings = response;
               resolve(true);
           });
