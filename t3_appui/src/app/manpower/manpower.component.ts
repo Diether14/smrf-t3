@@ -4,6 +4,7 @@ import { Component, OnInit, AfterContentChecked, ViewChild, ViewChildren, Elemen
 import { ApiService } from '../services/api.service';
 import { resetFakeAsyncZone } from '@angular/core/testing';
 import { UserService } from '../services/user.service';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-manpower',
@@ -146,6 +147,19 @@ export class ManpowerComponent implements OnInit, AfterContentChecked {
     } else {
       event.target.blur();
     }
+  }
+
+  formatTime(event, i) {
+    const actualVal = event.replace(':', '');
+    if (actualVal.length === 4) {
+      const intVal = parseInt(actualVal, 10);
+      const arr = actualVal.split('');
+      const hour = arr[0] + arr[1];
+      const min = arr[2] + arr[3];
+      const showVal = moment().hours(hour).minutes(min).format('HH:mm');
+      this.manpowers[i].START_TIME = showVal;
+      console.log(showVal);
+     }
   }
 
   preventEnter(e) {
