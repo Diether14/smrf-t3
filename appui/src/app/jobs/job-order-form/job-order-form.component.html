@@ -131,7 +131,7 @@
         <div class="form-group row" *ngIf="!createNew">
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <mat-form-field class="w-100" >
-                    <textarea matInput [(ngModel)]="joProblemDescription" name="joProblemDescription" rows="2" placeholder="Findings:"></textarea>
+                    <textarea matInput [(ngModel)]="jobOrderFindings" name="jobOrderFindings" rows="2" placeholder="Findings:"></textarea>
                 </mat-form-field>
             </div>
         </div>
@@ -248,7 +248,7 @@
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <label class="font-weight-500 to-gray text mr-auto">Findings: </label>
                 <br/>
-                <span class="m-4 text-muted"></span>
+                <span class="m-4 text-muted">{{ jobOrderFindings }}</span>
             </div>
             
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 mt-2">
@@ -265,7 +265,9 @@
         </div>
 
         <hr class="hr-dotted" />
-        <div class="form-group row">
+        <!-- (requestRepresentativeID !== userLoggedInID || requestRepresentativeID === userLoggedInID) && requestStatus < 3 -->
+        <!-- requestRepresentativeID !== userLoggedInID && requestStatus !== 4 -->
+        <div class="form-group row" *ngIf="acceptanceVisibility">
             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                 <mat-form-field class="w-100">
                     <textarea matInput placeholder="Remarks / Comments:" rows="2" name="acceptance" [(ngModel)]="acceptance" autofocus="true"></textarea>
@@ -283,7 +285,8 @@
     </ngb-alert>
 
     <!-- *ngIf="requestDetails.status === 'approved'" -->
-    <div class="form-group row" *ngIf="userLevel != 'requestor' || (userLevel === 'requestor' && jobOrderStatus === '1')">
+    <!-- ((requestRepresentativeID !== userLoggedInID || requestRepresentativeID === userLoggedInID) && requestStatus < 3) && requestStatus !== 4 && (userLevel != 'requestor' || (userLevel === 'requestor' && jobOrderStatus === '1')) -->
+    <div class="form-group row" *ngIf="buttonVisibility">
         <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6"></div>
         <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
         <button mat-raised-button color="warn" class="text-uppercase w-100">{{ btnCancel }}</button>

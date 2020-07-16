@@ -41,7 +41,8 @@ export class RequestDetailsComponent implements OnInit {
   requestId: number;
 
   attrAttachment = false;
-  requestedAttachment = '../../assets/img/backend.jpg';
+  // requestedAttachment = '../../assets/img/backend.jpg';
+  requestedAttachment = [];
   reqNotes: string;
   notificationStatus = true;
   notificationResult = '';
@@ -147,6 +148,7 @@ export class RequestDetailsComponent implements OnInit {
     // const result = await this.http.get(url).toPromise();
     const request = 'request';
     const details = 'details';
+    const attachments = 'attachments';
 
     await this.userService.getAPI(url).subscribe((response: any) => {
       const result = response;
@@ -161,6 +163,7 @@ export class RequestDetailsComponent implements OnInit {
       this.reqRepId = result[request][0].REQ_REP_ID;
       this.reqDetails = result[details];
       this.deptHead = result[request][0].DEPT_HEAD;
+      this.requestedAttachment = result[attachments];
 
       this.getRequestList(this.reqRepId);
 

@@ -24,6 +24,7 @@ export class JobOrderFormComponent implements OnInit {
   jobOrderDowntime;
   jobOrderNotes;
   jobOrderStatus;
+  jobOrderFindings;
 
   resEstimatedCompletion: string;
   resWorkRequired: string;
@@ -48,6 +49,13 @@ export class JobOrderFormComponent implements OnInit {
   msg = true;
   msgTxt = '';
   acceptance = '';
+  requestStatus;
+  requestRepresentativeID;
+  userLoggedInID;
+  approvedByID;
+  createdByID;
+  buttonVisibility = false;
+  acceptanceVisibility = false;
 
   constructor(public userService: UserService,
               public route: ActivatedRoute,
@@ -61,15 +69,14 @@ export class JobOrderFormComponent implements OnInit {
     if (this.manageRequest === true) {
       this.attrOther = true;
       this.btnTxt = 'UPDATE';
-      this.getJob();
+      await this.getJob();
     }
 
     if (this.requestCompleted === true) {
       this.btnTxt = 'ACCEPT';
       this.btnCancel = 'REJECT';
-      this.getJob();
+      await this.getJob();
     }
-
   }
 
   async getChief() {
@@ -89,13 +96,13 @@ export class JobOrderFormComponent implements OnInit {
              );
   }
 
-  getJob() {
+  async getJob() {
     const id = this.route.snapshot.paramMap.get('id');
     const url =  '/localapi/jobs/' + id;
     const keyJobs = 'jobs_order';
     const keyManpower = 'manpower';
 
-    this.http.get(url)
+    await this.http.get(url)
             .subscribe(
               res => {
                   this.resEstimatedCompletion = res[keyJobs][0].DATE_REQUIRED;
@@ -109,6 +116,7 @@ export class JobOrderFormComponent implements OnInit {
 
                   this.jobOrderStatusReport = res[keyJobs][0].STATUS_REPORT;
                   this.jobOrderNotes = res[keyJobs][0].REMARKS;
+                  this.jobOrderFindings = res[keyJobs][0].FINDINGS;
 
                   const ds = res[keyJobs][0].DATE_STARTED;
                   const df = res[keyJobs][0].DATE_FINISHED;
@@ -118,6 +126,14 @@ export class JobOrderFormComponent implements OnInit {
                   this.jobOrderDowntime = res[keyJobs][0].TOTAL_DOWNTIME;
                   this.manpowerList = res[keyManpower];
                   this.jobOrderStatus = res[keyJobs][0].STATUS;
+
+                  this.requestStatus = res[keyJobs][0].REQ_STATUS;
+                  this.requestRepresentativeID  = res[keyJobs][0].REP_PERSON_ID;
+                  this.approvedByID  = res[keyJobs][0].APPROVED_BY;
+                  this.userLoggedInID = this.userService.user.id;
+                  this.createdByID = res[keyJobs][0].REQ_CREATED_BY;
+
+                  this.displayValidation();
               },
               err => {
                 console.log(err);
@@ -209,8 +225,12 @@ export class JobOrderFormComponent implements OnInit {
               }
             );
 
-    this.msg = !this.msg;
     this.msgTxt = 'You have successfully closed a request.';
+    this.msg = !this.msg;
+
+    setTimeout(() => {
+      this.router.navigate(['/manage-request']);
+    }, 2000);
   }
 
   createJobOrder() {
@@ -240,10 +260,11 @@ export class JobOrderFormComponent implements OnInit {
           materials: this.materialList,
           manpower: this.manpowerList,
           status_report: this.jobOrderStatusReport,
-          date_started: this.jobOrderDateStarted ? moment(this.jobOrderDateStarted).format('DD-MMM-YYYY HH:mm:ss') : null,
-          date_finished: this.jobOrderDateFinished ? moment(this.jobOrderDateFinished).format('DD-MMM-YYYY HH:mm:ss') : null,
+          date_started: this.jobOrderDateStarted ? moment(this.jobOrderDateStarted).format('YYYY/MM/DD HH:mm:ss') : null,
+          date_finished: this.jobOrderDateFinished ? moment(this.jobOrderDateFinished).format('YYYY/MM/DD HH:mm:ss') : null,
           total_downtime: this.jobOrderDowntime,
           notes: this.jobOrderNotes,
+          findings: this.jobOrderFindings,
           completed: this.jobCompleted
         };
 
@@ -270,6 +291,35 @@ export class JobOrderFormComponent implements OnInit {
 
   otherInfo() {
     this.attrOther = !this.attrOther;
+  }
+
+  displayValidation() {
+    // IF REQUEST IS NEW AND REPRESENTATIVE = USER LOGGED IN AND REQUEST STATUS < 3
+    // IF USER LOGGED IN = DEPT. HEAD
+    // IF USER LOGGED IN = REQUESTOR / CREATED THE REQUEST.
+    // IF USER LOGGED IN = PERSON-IN-CHARGE / ISSUED TO AND REQUEST STATUS < 3
+
+    if (this.requestStatus !== 4) {
+      if (this.userLoggedInID === this.requestRepresentativeID && this.requestStatus < 3) {
+        this.buttonVisibility = !this.buttonVisibility;
+        this.acceptanceVisibility = !this.acceptanceVisibility;
+
+      } else if (this.userLoggedInID === this.approvedByID) {
+        this.buttonVisibility = !this.buttonVisibility;
+        this.acceptanceVisibility = !this.acceptanceVisibility;
+
+      } else if (this.userLoggedInID === this.createdByID) {
+        this.buttonVisibility = !this.buttonVisibility;
+        this.acceptanceVisibility = !this.acceptanceVisibility;
+
+      } else if (this.userLoggedInID === this.jobOrderIssuedTo && this.requestStatus < 3) {
+        this.buttonVisibility = !this.buttonVisibility;
+        this.acceptanceVisibility = !this.acceptanceVisibility;
+      }
+
+    }
+
+    console.log(this.userLoggedInID, this.requestRepresentativeID);
   }
 
 }

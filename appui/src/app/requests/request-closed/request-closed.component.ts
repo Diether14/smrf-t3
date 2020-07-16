@@ -4,11 +4,11 @@ import { ActivatedRoute } from '@angular/router';
 import { RequestSummaryComponent } from '../../requests/request-summary/request-summary.component';
 
 @Component({
-  selector: 'app-request-acceptance',
-  templateUrl: './request-acceptance.component.html',
-  styleUrls: ['./request-acceptance.component.css']
+  selector: 'app-request-closed',
+  templateUrl: './request-closed.component.html',
+  styleUrls: ['./request-closed.component.css']
 })
-export class RequestAcceptanceComponent implements OnInit, AfterContentChecked {
+export class RequestClosedComponent implements OnInit, AfterContentChecked {
   request;
   completed;
 
@@ -23,7 +23,6 @@ export class RequestAcceptanceComponent implements OnInit, AfterContentChecked {
   }
 
   ngAfterContentChecked() {
-    this.completed = (this.RequestSummary.reqStatus === 3);
+    this.completed = (this.RequestSummary.reqStatus === 4);
   }
-
 }

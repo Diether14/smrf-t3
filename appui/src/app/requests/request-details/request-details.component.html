@@ -39,25 +39,15 @@
 
                         <div class="row mt-4">
                             <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                <!-- <label class="font-weight-500 to-gray text-nowrap">
-                                    Department: 
-                                    <span class="font-weight-light">
-                                        {{ requestedDepartment | uppercase }}
-                                        <span *ngIf="requestedDepartment === 'opt'">
-                                            - {{ requestedMachine | uppercase }}
-                                        </span>
-                                    </span>
-                                </label> -->
-
-                                <div class="mb-2" *ngIf="requestedAttachment">
-                                    <label class="font-weight-500 to-gray text-nowrap" *ngIf="requestedAttachment">
+                                <div class="mb-2" *ngIf="requestedAttachment.length > 0">
+                                    <label class="font-weight-500 to-gray text-nowrap" *ngIf="requestedAttachment.length > 0">
                                         Attachment: 
                                         <mat-slide-toggle (click)="setAttachment();" class="font-weight-light">{{ attrAttachment === false ? 'Show' : 'Hide' }}</mat-slide-toggle>
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4">
-                                <img *ngIf="attrAttachment" src="{{ requestedAttachment }}" class="w-100 h-100" (click)="previewImg(requestedAttachment)" />
+                            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-4" *ngFor="let img of requestedAttachment; let i = index;">
+                                <img *ngIf="attrAttachment" [src]="'/localapi/uploads/appui/' + img.IMG" class="w-100 h-100" (click)="previewImg('/localapi/uploads/appui/' + img.IMG)" />
                             </div>
                         </div>
 
@@ -131,7 +121,7 @@
                         </div>
 
                         <!-- Show if request type = details && user level = user -->
-                        <div class="form-group row mt-3" *ngIf="reqStatus === 0 && (userLevel === 'requestor')">
+                        <div class="form-group row mt-3" *ngIf="reqStatus === 0 && (userLevel === 'requestor' || userLevel === 'chief')">
                             <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6"></div>
                             <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
                                 <button mat-raised-button color="warn" (click)="requestUpdate(false, true)" class="w-100 text-uppercase">Delete</button>

@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Component, OnInit, Injectable, Input, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer } from '@angular/platform-browser';
+import { RequestFormComponent } from '../request-form/request-form.component';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +44,8 @@ export class RequestSummaryComponent implements OnInit {
               public route: ActivatedRoute,
               public router: Router,
               public userService: UserService,
-              private sanitizer: DomSanitizer) { }
+              private sanitizer: DomSanitizer,
+              public requestForm: RequestFormComponent) { }
 
   async ngOnInit() {
     // this.setRequest = 12;
@@ -57,6 +59,7 @@ export class RequestSummaryComponent implements OnInit {
 
   async getRequest() {
     const id = this.route.snapshot.paramMap.get('id');
+    console.log(id);
     const url = '/localapi/requests/' + id;
     const result = await this.http.get(url).toPromise();
     const request = 'request';
@@ -74,9 +77,9 @@ export class RequestSummaryComponent implements OnInit {
     this.reqDetails = result[details];
     this.deptHead = result[request][0].DEPT_HEAD;
     this.attachments = result[attachments];
-    await this.attachments.forEach((el, i) => {
-      this.attachments[i].IMG = this.sanitizer.bypassSecurityTrustUrl('localapi/uploads/appui/' + el.IMG);
-    });
+    // await this.attachments.forEach((el, i) => {
+    //   this.attachments[i].IMG = this.sanitizer.bypassSecurityTrustUrl('localapi/uploads/appui/' + el.IMG);
+    // });
 
     // return result;
     // this.setRequest.controlNumber = this.controlNumber;
@@ -91,12 +94,12 @@ export class RequestSummaryComponent implements OnInit {
     const url = '/localapi/service-representatives';
     this.http.get(url)
       .subscribe(
-          data => {
-              this.serviceRep = data;
-          },
-          err => {
-              console.log(err);
-          });
+        data => {
+          this.serviceRep = data;
+        },
+        err => {
+          console.log(err);
+        });
   }
 
   selectChangeHandler(event) {
@@ -115,23 +118,27 @@ export class RequestSummaryComponent implements OnInit {
     };
 
     this.http.post(url, data)
-            .subscribe(
-                res => {
-                  const data: any = res;
+      .subscribe(
+        res => {
+          const data: any = res;
 
-                  if (data.output === 'Y') {
-                    this.successTransfer = !this.successTransfer;
+          if (data.output === 'Y') {
+            this.successTransfer = !this.successTransfer;
 
-                    setTimeout(() => {
-                      this.successTransfer = !this.successTransfer;
-                      this.router.navigate(['/job']);
-                    }, 2000);
-                  }
-                },
-                err => {
-                    console.log(err);
-                }
-            );
+            setTimeout(() => {
+              this.successTransfer = !this.successTransfer;
+              this.router.navigate(['/job']);
+            }, 2000);
+          }
+        },
+        err => {
+          console.log(err);
+        }
+      );
+  }
+
+  previewImg(img) {
+    this.requestForm.previewImg(img);
   }
 
 }

@@ -59,10 +59,15 @@ export class ManageRequestsComponent implements OnInit {
             element[`router`] = '/completed/';
             // element[`router`] = '/manage-jobs/';
             this.requestsList.push(element);
-          } else {
+          } else if (element.REQ_STATUS === 3) {
             element[`REQ_STATUS`] = 'completed!';
             element[`color`] = 'text-success';
             element[`router`] = '/completed/';
+            this.requestsList.push(element);
+          } else if (element.REQ_STATUS === 4) {
+            element[`REQ_STATUS`] = 'Closed';
+            element[`color`] = 'text-dark';
+            element[`router`] = '/closed/';
             this.requestsList.push(element);
           }
         // }

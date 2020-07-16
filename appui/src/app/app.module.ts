@@ -1,6 +1,5 @@
 import { SidenavServiceService } from './sidenav-service.service';
 
-
 import { AuthenticateGuard } from './authenticate.guard';
 import { RouterModule } from '@angular/router';
 import { BrowserModule } from '@angular/platform-browser';
@@ -44,6 +43,7 @@ import { RequestModalComponent } from './requests/request-modal/request-modal.co
 import { ManageRequestsComponent } from './requests/manage-requests/manage-requests.component';
 import { RequestDetailsComponent } from './requests/request-details/request-details.component';
 import { RequestAcceptanceComponent } from './requests/request-acceptance/request-acceptance.component';
+import { RequestClosedComponent } from './requests/request-closed/request-closed.component';
 import { RequestSummaryComponent } from './requests/request-summary/request-summary.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
 import { FooterComponent } from './footer/footer.component';
@@ -71,6 +71,7 @@ import * as $ from 'jquery';
     RequestModalComponent,
     RequestDetailsComponent,
     RequestAcceptanceComponent,
+    RequestClosedComponent,
     JobOrderSummaryComponent,
     JobComponent,
     ManageJobOrderComponent,
@@ -101,6 +102,7 @@ import * as $ from 'jquery';
         { path: 'modal', component: RequestModalComponent },
         { path: 'manage-request', component: ManageRequestsComponent },
         { path: 'completed/:id', component: RequestAcceptanceComponent },
+        { path: 'closed/:id', component: RequestClosedComponent },
         { path: 'job', component: JobComponent },
         { path: 'manage-jobs/:id', component: ManageJobOrderComponent },
         { path: '**', component: PageNotFoundComponent },

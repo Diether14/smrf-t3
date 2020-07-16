@@ -49,6 +49,11 @@ export class JobComponent implements OnInit, AfterContentChecked {
       this.jobTitle = 'Manage Assigned Job Orders';
       this.jobStatus = 'Completed';
       this.jobStatusText = 'text-primary';
+    } else if (this.userService.jobOrder === 4) {
+      this.jobRouter = '/closed/';
+      this.jobTitle = 'Manage Assigned Job Orders';
+      this.jobStatus = 'closed';
+      this.jobStatusText = 'text-dark';
     }
   }
 
@@ -65,6 +70,7 @@ export class JobComponent implements OnInit, AfterContentChecked {
     }
 
     this.req = res;
+    // console.log(this.req);
   }
 
 }

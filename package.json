@@ -26,5 +26,13 @@
     "@angular/cli": "^7.3.2",
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Diether14/smrf-t3.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Diether14/smrf-t3/issues"
+  },
+  "homepage": "https://github.com/Diether14/smrf-t3#readme"
 }
