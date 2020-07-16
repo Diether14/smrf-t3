@@ -37,7 +37,7 @@ export class AddRowComponent implements OnInit {
     if (this.startTime.length === 4 ) {
       const time = parseInt(this.startTime.slice(0, 2), 10);
       const min = parseInt(this.startTime.slice(2, 4), 10);
-      const timeStr = moment(this.dateSelected).hour(time).minutes(min).format('MM/DD/YYYY HH:mm');
+      const timeStr = moment(this.dateSelected).format('MM/DD/YYYY') + ' ' + time + ':' + min;
       this.fullStartTime = moment(timeStr);
       this.fullEndTime = moment(this.fullStartTime).add(1, 'hours').startOf('hour');
       const endTimeObj = moment(this.fullEndTime).format('HHmm');
@@ -51,7 +51,7 @@ export class AddRowComponent implements OnInit {
     if (this.startTime.length === 4 ) {
       const time = parseInt(this.endTime.slice(0, 2), 10);
       const min = parseInt(this.endTime.slice(2, 4), 10);
-      const timeStr = moment(this.dateSelected).hour(time).minutes(min).format('MM/DD/YYYY HH:mm');
+      const timeStr = moment(this.dateSelected).format('MM/DD/YYYY') + ' ' + time + ':' + min;
       this.fullEndTime = moment(timeStr);
     }
   }

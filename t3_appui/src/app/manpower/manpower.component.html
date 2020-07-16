@@ -93,7 +93,6 @@
                                 (ngModelChange)="handleInput(i)"
                                 [(ngModel)]="manpowers[i].END_TIME"
                                 (focus)="$event.target.select();"
-                                (keydown)="limit(endTime.value, $event.key)"
                                 (keyup.enter)="time(endTime.value, $event)"
                                 (keydown.enter)="preventEnter($event)"
                                 placeholder="HHmm"
